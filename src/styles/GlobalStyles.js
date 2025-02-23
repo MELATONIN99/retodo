@@ -51,6 +51,7 @@ const GlobalStyles = createGlobalStyle`
     border: 0;
     background: transparent;
     cursor: pointer;
+    color: ${({ theme }) => theme.textColor};
   }
   a {
     text-decoration: none;
