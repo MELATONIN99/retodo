@@ -7,8 +7,11 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import getFireBaseErrorMessage from '../../utils/authError';
+import { useSetRecoilState } from 'recoil';
+import authState from '../../recoil/atoms/authAtom';
 
 export default function SignUpForm() {
+  const setAuth = useSetRecoilState(authState);
   const navigate = useNavigate();
 
   const onClick = event => {
@@ -24,6 +27,7 @@ export default function SignUpForm() {
             updateProfile(auth.currentUser, {
               displayName: displayName,
             }).then(() => {
+              setAuth(auth);
               alert(`가입을 환영합니다 ${displayName}`);
               navigate('/');
             });

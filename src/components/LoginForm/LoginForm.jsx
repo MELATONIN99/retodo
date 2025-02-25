@@ -18,7 +18,7 @@ export default function LoginForm() {
       .then(() => {
         signInWithEmailAndPassword(auth, email, password)
           .then(() => {
-            setAuth(auth.currentUser.email);
+            setAuth(auth);
             alert(`로그인을 성공했습니다.`);
             navigate('/');
           })

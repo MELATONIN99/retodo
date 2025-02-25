@@ -7,4 +7,9 @@ const authState = atom({
   dangerouslyAllowMutability: true,
 });
 
+export const isLoggedInState = atom({
+  key: 'isLoggedInState',
+  default: false,
+});
+
 export default authState;
