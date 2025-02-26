@@ -3,6 +3,8 @@ import { db } from '../../firebase/firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { useRecoilValue } from 'recoil';
 import authState from '../../recoil/atoms/authAtom';
+import * as S from './TodoFormStyle';
+import { toast } from 'react-toastify';
 
 export default function TodoForm({ setIsRefreshTrigger }) {
   const userInfo = useRecoilValue(authState);
@@ -21,11 +23,11 @@ export default function TodoForm({ setIsRefreshTrigger }) {
   };
 
   const onSubmitClick = async event => {
+    event.preventDefault();
     if (todoInput.todoValue === '') {
-      alert('할 일을 작성해 주세요');
+      toast.warn('할 일을 작성해 주세요');
       return;
     }
-    event.preventDefault();
     try {
       await addDoc(collection(db, 'todos'), {
         todoValue: todoInput.todoValue,
@@ -42,21 +44,27 @@ export default function TodoForm({ setIsRefreshTrigger }) {
   };
 
   return (
-    <form id="todoForm">
-      <input
+    <S.Form id="todoForm">
+      <S.TodoInput
         type="text"
         name="todo"
-        placeholder="할 일을 작성해 주세요"
+        placeholder="작업 추가"
         value={todoInput.todoValue}
         onChange={event => handleInputChange('todoValue', event)}
       />
-      <label>
-        <input type="checkbox" name="favoritesCheckbox" onChange={event => handleInputChange('favorite', event)} />
-        즐겨찾기에 등록하시겠습니까?
-      </label>
-      <button type="submit" onClick={onSubmitClick}>
-        제출
-      </button>
-    </form>
+      <S.ControlBox>
+        <S.FavoriteLabel>
+          <S.FavoriteInput
+            type="checkbox"
+            name="favoriteCheckbox"
+            onChange={event => handleInputChange('favorite', event)}
+          />
+          즐겨찾기
+        </S.FavoriteLabel>
+        <S.SubmitButton type="submit" onClick={onSubmitClick}>
+          추가
+        </S.SubmitButton>
+      </S.ControlBox>
+    </S.Form>
   );
 }

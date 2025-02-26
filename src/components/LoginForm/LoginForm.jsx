@@ -4,6 +4,8 @@ import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword }
 import { useSetRecoilState } from 'recoil';
 import authState from '../../recoil/atoms/authAtom';
 import getFireBaseErrorMessage from '../../utils/authError';
+import * as S from '../../styles/FormStyle';
+import { toast } from 'react-toastify';
 
 export default function LoginForm() {
   const setAuth = useSetRecoilState(authState);
@@ -19,13 +21,13 @@ export default function LoginForm() {
         signInWithEmailAndPassword(auth, email, password)
           .then(() => {
             setAuth(auth);
-            alert(`로그인을 성공했습니다.`);
+            toast.success(`로그인 성공`);
             navigate('/');
           })
           .catch(error => {
             const errorCode = error.code;
             const errorMessage = getFireBaseErrorMessage(errorCode);
-            alert(`${errorMessage}`);
+            toast.error(`${errorMessage}`);
           });
       })
       .catch(error => {
@@ -33,13 +35,12 @@ export default function LoginForm() {
       });
   };
   return (
-    <>
-      <h1>로그인</h1>
-      <form id="loginForm">
-        <input type="text" name="userName" placeholder="Email" id="email" />
-        <input type="password" name="userPassword" placeholder="Password" id="password" />
-        <button onClick={onClick}>Login</button>
-      </form>
-    </>
+    <S.FormLayout>
+      <S.Form id="loginForm">
+        <S.Input type="text" name="userName" placeholder="이메일" id="email" />
+        <S.Input type="password" name="userPassword" placeholder="비밀번호" id="password" />
+        <S.Button onClick={onClick}>로그인</S.Button>
+      </S.Form>
+    </S.FormLayout>
   );
 }

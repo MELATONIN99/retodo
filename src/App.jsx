@@ -8,17 +8,19 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import authState, { isLoggedInState } from './recoil/atoms/authAtom';
 import { auth } from './firebase/firebase';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const isDark = useRecoilValue(isDarkState);
-  const [authtest, setAuth] = useRecoilState(authState);
+  const [userAuth, setUserAuth] = useRecoilState(authState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
-        setAuth(user);
+        setUserAuth(user);
         setIsLoggedIn(true);
         setIsLoading(false);
       } else {
@@ -29,12 +31,13 @@ function App() {
     return () => {
       unsubscribe();
     };
-  }, [setAuth, setIsLoggedIn, isLoggedIn, authtest, isLoading]);
+  }, [setUserAuth, setIsLoggedIn, isLoggedIn, userAuth, isLoading]);
 
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyles />
+        <ToastContainer position="top-center" limit={2} closeButton={false} autoClose={2000} hideProgressBar />
         {isLoading ? <p>Loading..</p> : <Router />}
       </ThemeProvider>
     </>

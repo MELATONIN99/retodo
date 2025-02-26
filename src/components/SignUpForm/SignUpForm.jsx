@@ -9,6 +9,8 @@ import { auth } from '../../firebase/firebase';
 import getFireBaseErrorMessage from '../../utils/authError';
 import { useSetRecoilState } from 'recoil';
 import authState from '../../recoil/atoms/authAtom';
+import * as S from '../../styles/FormStyle';
+import { toast } from 'react-toastify';
 
 export default function SignUpForm() {
   const setAuth = useSetRecoilState(authState);
@@ -20,6 +22,10 @@ export default function SignUpForm() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
+    if (displayName === '') {
+      toast.warn('닉네임은 한 글자 이상 입력해 주세요.');
+    }
+
     setPersistence(auth, browserSessionPersistence)
       .then(() => {
         createUserWithEmailAndPassword(auth, email, password, displayName)
@@ -28,13 +34,13 @@ export default function SignUpForm() {
               displayName: displayName,
             }).then(() => {
               setAuth(auth);
-              alert(`가입을 환영합니다 ${displayName}`);
+              toast.success(`가입을 환영합니다 ${displayName}`);
               navigate('/');
             });
           })
           .catch(error => {
             const errorMessage = getFireBaseErrorMessage(error.code);
-            alert(`${errorMessage}`);
+            toast.error(`${errorMessage}`);
           });
       })
       .catch(error => {
@@ -42,14 +48,13 @@ export default function SignUpForm() {
       });
   };
   return (
-    <>
-      <h1>회원가입</h1>
-      <form id="signUpForm">
-        <input type="text" name="userDisplayName" placeholder="Name" id="displayName" />
-        <input type="text" name="userName" placeholder="Email" id="email" />
-        <input type="password" name="userPassword" placeholder="Password" id="password" />
-        <button onClick={onClick}>Sign Up</button>
-      </form>
-    </>
+    <S.FormLayout>
+      <S.Form id="signUpForm">
+        <S.Input type="text" name="userDisplayName" placeholder="닉네임" id="displayName" />
+        <S.Input type="text" name="userName" placeholder="이메일" id="email" />
+        <S.Input type="password" name="userPassword" placeholder="비밀번호" id="password" />
+        <S.Button onClick={onClick}>회원가입</S.Button>
+      </S.Form>
+    </S.FormLayout>
   );
 }
