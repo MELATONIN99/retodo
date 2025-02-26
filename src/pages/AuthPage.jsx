@@ -1,20 +1,35 @@
 import { useState } from 'react';
 import SignUpForm from '../components/SignUpForm/SignUpForm';
-import ToggleSwitch from './../components/shared/ToggleSwitch/ToggleSwitch';
 import LoginForm from '../components/LoginForm/LoginForm';
-import { useRecoilState } from 'recoil';
-import { isDarkState } from '../recoil/atoms/themeAtom';
+import Navigation from '../components/shared/Navigation/Navigation';
+import * as S from '../styles/AuthPageStyles';
 
 export default function AuthPage() {
   const [isLoginForm, setIsLoginForm] = useState(true);
-  const [isDark, setIsDark] = useRecoilState(isDarkState);
+
+  const onClickLogin = () => {
+    setIsLoginForm(true);
+  };
+
+  const onClickSignUp = () => {
+    setIsLoginForm(false);
+  };
 
   return (
-    <>
-      <h1>AuthPage</h1>
-      <ToggleSwitch isEnabled={isLoginForm} setIsEnabled={setIsLoginForm} />
-      {isLoginForm ? <LoginForm /> : <SignUpForm />}
-      <ToggleSwitch isEnabled={isDark} setIsEnabled={setIsDark} />
-    </>
+    <S.AuthPageLayout>
+      <Navigation />
+      <S.AuthPageTitle>ReToDo</S.AuthPageTitle>
+      <S.AuthBox>
+        <S.AuthSelectBox isEnabled={isLoginForm} setIsEnabled={setIsLoginForm}>
+          <S.AuthLoginBox $isEnabled={isLoginForm} onClick={onClickLogin}>
+            로그인
+          </S.AuthLoginBox>
+          <S.AuthSignUpBox $isEnabled={isLoginForm} onClick={onClickSignUp}>
+            회원가입
+          </S.AuthSignUpBox>
+        </S.AuthSelectBox>
+        {isLoginForm ? <LoginForm /> : <SignUpForm />}
+      </S.AuthBox>
+    </S.AuthPageLayout>
   );
 }

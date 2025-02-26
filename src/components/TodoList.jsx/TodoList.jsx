@@ -3,6 +3,11 @@ import { db } from '../../firebase/firebase';
 import authState from '../../recoil/atoms/authAtom';
 import { useRecoilValue } from 'recoil';
 import { useCallback, useEffect, useState } from 'react';
+import * as S from './TodoListStyle';
+import StarIcon from '../../assets/StarIcon';
+import EditIcon from '../../assets/EditIcon';
+import DeleteIcon from '../../assets/DeleteIcon';
+import { toast } from 'react-toastify';
 
 export default function TodoList({ isRefreshTrigger, setIsRefreshTrigger }) {
   const userInfo = useRecoilValue(authState);
@@ -40,16 +45,20 @@ export default function TodoList({ isRefreshTrigger, setIsRefreshTrigger }) {
   const onEditSubmit = async (todo, event) => {
     event.preventDefault();
     if (selectTodoData.todoValue === todo.todoValue) {
-      alert('수정된 내용이 없습니다');
+      toast.warn('수정된 내용이 없습니다');
+      return;
+    } else if (selectTodoData.todoValue === '') {
+      toast.warn('할 일을 작성해 주세요');
       return;
     }
+
     try {
       const todoDocRef = doc(db, 'todos', selectTodoId);
       console.log(selectTodoData);
       await updateDoc(todoDocRef, selectTodoData);
       setIsRefreshTrigger(prev => !prev);
       setIsEditInputMode(false);
-      alert('수정되었습니다.');
+      toast.success('수정되었습니다.');
     } catch (error) {
       console.log(error);
     }
@@ -77,6 +86,7 @@ export default function TodoList({ isRefreshTrigger, setIsRefreshTrigger }) {
       const id = todo.id;
       await deleteDoc(doc(db, 'todos', id));
       setIsRefreshTrigger(prev => !prev);
+      toast.success('삭제되었습니다.');
     } catch (error) {
       console.log(error);
     }
@@ -109,34 +119,40 @@ export default function TodoList({ isRefreshTrigger, setIsRefreshTrigger }) {
   }, [fetchTodoData, isRefreshTrigger]);
 
   return (
-    <article>
-      <h3>투두 리스트</h3>
-      <input name="search" placeholder="검색" value={searchTodo} onChange={onSearchInputChange} />
-      <ul>
+    <S.TodoListLayout>
+      <S.SearchInput name="search" placeholder="작업 검색" value={searchTodo} onChange={onSearchInputChange} />
+      <S.ItemList>
         {todoList &&
           filterTodoList.map(todo => (
-            <li key={todo.id}>
+            <S.TodoItem key={todo.id}>
               {isEditInputMode && todo.id === selectTodoId ? (
-                <>
-                  <form>
-                    <input
-                      type="text"
-                      name="editTodoInput"
-                      value={selectTodoData.todoValue}
-                      onChange={event => handleEditInputChange(event)}
-                    />
-                    <button onClick={event => onEditSubmit(todo, event)}>수정완료</button>
-                  </form>
-                </>
+                <S.TodoListForm>
+                  <S.TodoEditInput
+                    type="text"
+                    name="editTodoInput"
+                    value={selectTodoData.todoValue}
+                    onChange={event => handleEditInputChange(event)}
+                  />
+                  <button onClick={event => onEditSubmit(todo, event)}>수정</button>
+                </S.TodoListForm>
               ) : (
-                <p>{todo.todoValue}</p>
+                <S.TodoValueParagraph>{todo.todoValue}</S.TodoValueParagraph>
               )}
-              <button onClick={() => onFavoriteClick(todo)}>{`${todo.favorite}`}별모양아이콘</button>
-              <button onClick={() => onEditClick(todo)}>수정아이콘</button>
-              <button onClick={() => onDeleteClick(todo)}>삭제</button>
-            </li>
+              <S.IconButtonBox>
+                <S.IconButton onClick={() => onFavoriteClick(todo)}>
+                  <StarIcon isFavorite={todo.favorite}></StarIcon>
+                </S.IconButton>
+
+                <S.IconButton onClick={() => onEditClick(todo)}>
+                  <EditIcon />
+                </S.IconButton>
+                <S.IconButton onClick={() => onDeleteClick(todo)}>
+                  <DeleteIcon />
+                </S.IconButton>
+              </S.IconButtonBox>
+            </S.TodoItem>
           ))}
-      </ul>
-    </article>
+      </S.ItemList>
+    </S.TodoListLayout>
   );
 }

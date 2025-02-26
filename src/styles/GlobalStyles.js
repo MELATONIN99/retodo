@@ -39,7 +39,6 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1;
     font-family: 'Noto Sans KR', sans-serif;
     background-color: #f6f9f0;
-    margin-bottom: 100px;
     color: ${({ theme }) => theme.textColor};
     background-color: ${({ theme }) => theme.bgColor};
   }
@@ -52,10 +51,16 @@ const GlobalStyles = createGlobalStyle`
     background: transparent;
     cursor: pointer;
     color: ${({ theme }) => theme.textColor};
+    font-family: 'Noto Sans KR', sans-serif;
   }
   a {
     text-decoration: none;
     color: inherit;
+  }
+  input {
+    background-color: ${({ theme }) => theme.rgbaLight};
+    color: ${({ theme }) => theme.textColor};
+    font-family: 'Noto Sans KR', sans-serif;
   }
 `;
 
